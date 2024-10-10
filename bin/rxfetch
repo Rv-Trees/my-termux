@@ -44,7 +44,14 @@ function getKernel() {
 }
 
 function getTotalPackages() {
-  package_manager="$(which {apt,dpkg} 2>/dev/null | grep -v "not found" | awk -F/ 'NR==1{print $NF}')"
+  if command -v apt >/dev/null 2>&1; then
+    package_manager="apt"
+  elif command -v dpkg >/dev/null 2>&1; then
+    package_manager="dpkg"
+  else
+    package_manager=""
+  fi
+
   case "${package_manager}" in
     "apt" )
       packages=$(apt list --installed 2>/dev/null | wc -l)
